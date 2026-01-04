@@ -68,11 +68,11 @@ let
 
   # Runner configuration
   common = {
-    inherit extraLabels;
     enable = true;
     replace = true;
     ephemeral = true;
     noDefaultLabels = true;
+    extraLabels = extraLabels ++ config.services.github-nix-ci.runnerSettings.extraLabels;
     extraPackages = extraPackages ++ config.services.github-nix-ci.runnerSettings.extraPackages;
   } // lib.optionalAttrs isLinux { inherit user group; };
   user = "github-runner";
@@ -96,6 +96,15 @@ in
           };
 
           runnerSettings = {
+
+            extraLabels = lib.mkOption {
+              type = types.listOf types.str;
+              default = [ ];
+              description = ''
+                Extra labels to be added to all runners
+              '';
+            };
+
             extraPackages = lib.mkOption {
               type = types.listOf types.package;
               default = [ ];
@@ -103,6 +112,7 @@ in
                 Extra packages to be installed on all runners
               '';
             };
+
           };
 
           orgRunners = lib.mkOption {
